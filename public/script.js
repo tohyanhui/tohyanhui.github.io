@@ -1,4 +1,10 @@
 document.addEventListener("DOMContentLoaded", function () {
+    // Initialize EmailJS
+    emailjs.init("NtEBNuKBba7qpzrr9");
+
+    // Set current year in footer
+    document.getElementById('current-year').textContent = new Date().getFullYear();
+
     // Theme toggle functionality
     const themeToggle = document.getElementById("themeToggle");
     const html = document.documentElement;
@@ -84,26 +90,35 @@ document.addEventListener("DOMContentLoaded", function () {
         contactForm.addEventListener("submit", function (e) {
             e.preventDefault();
 
-            // Get form values
-            const name = document.getElementById("name").value;
-            const email = document.getElementById("email").value;
-            const message = document.getElementById("message").value;
-
-            // Here you would typically send the form data to a server
-            console.log("Form submitted:", { name, email, message });
-
-            // Show success message
+            // Show loading text in button
             const button = contactForm.querySelector("button[type='submit']");
             const originalText = button.textContent;
-            button.textContent = "Message Sent!";
+            button.textContent = "Sending...";
 
-            // Reset form
-            contactForm.reset();
+            // Send the form data to EmailJS
+            emailjs.sendForm('service_ezcphyg', 'template_g1359jd', this)
+                .then(function (response) {
+                    console.log('SUCCESS!', response);
+                    // Show success message
+                    button.textContent = "Message Sent!";
 
-            // Restore button text after a delay
-            setTimeout(() => {
-                button.textContent = originalText;
-            }, 3000);
+                    // Reset form
+                    contactForm.reset();
+
+                    // Restore button text after a delay
+                    setTimeout(() => {
+                        button.textContent = originalText;
+                    }, 3000);
+                }, function (error) {
+                    console.log('FAILED...', error);
+                    // Show error message
+                    button.textContent = "Send Failed, Try Again";
+
+                    // Restore button text after a delay
+                    setTimeout(() => {
+                        button.textContent = originalText;
+                    }, 3000);
+                });
         })
     }
 
